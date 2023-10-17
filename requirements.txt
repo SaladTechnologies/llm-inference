@@ -2,5 +2,4 @@ git+https://github.com/huggingface/transformers.git
 accelerate
 fastapi
 uvicorn
-optimum
 pydantic

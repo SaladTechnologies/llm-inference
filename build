@@ -12,19 +12,33 @@ normalize_huggingface_model_id() {
 model_id="$1"
 
 if [ -z "$model_id" ]; then
-  echo "Usage: $0 <model-id>"
-  exit 1
+  docker_tag="base"
+else
+  docker_tag=$(normalize_huggingface_model_id "$model_id")
 fi
 
-docker_tag=$(normalize_huggingface_model_id "$model_id")
-
 echo "Building Docker image with tag: saladtechnologies/llm-inference:$docker_tag"
-echo "Text Generation Model ID: $model_id"
 
-docker buildx build \
-  -t saladtechnologies/llm-inference:$docker_tag \
-  --platform linux/amd64 \
-  --output type=docker \
-  --provenance=false \
-  --build-arg MODEL_ID="$model_id" \
-  .
+if [ -z "$model_id" ]; then
+  echo "No model ID provided, using base image"
+  docker buildx build \
+    -t saladtechnologies/llm-inference:$docker_tag \
+    --platform linux/amd64 \
+    --output type=docker \
+    --provenance=false \
+    .
+else
+  echo "Text Generation Model ID: $model_id"
+
+  docker buildx build \
+    -t saladtechnologies/llm-inference:$docker_tag \
+    --platform linux/amd64 \
+    --output type=docker \
+    --provenance=false \
+    --build-arg MODEL_ID="$model_id" \
+    .
+fi
+
+echo "Created Image: saladtechnologies/llm-inference:$docker_tag"
+echo "Push The Image:"
+echo "  docker push saladtechnologies/llm-inference:$docker_tag"

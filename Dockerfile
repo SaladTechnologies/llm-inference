@@ -13,7 +13,9 @@ COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
 COPY model.py .
-RUN python -c "from model import load; load(True);"
+
+# Only preload the model if we have a model ID 
+RUN if [ -n "$MODEL_ID" ]; then python -c "from model import load; load(True);"; fi
 
 COPY api.py .
 
