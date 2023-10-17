@@ -3,3 +3,6 @@ accelerate
 fastapi
 uvicorn
 pydantic
+bitsandbytes
+ninja
+packaging

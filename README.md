@@ -34,3 +34,50 @@ Modify the docker-compose.yml file to select your model, port, and host.
 ```bash
 docker compose up
 ```
+
+## Use
+
+```bash
+curl  -X POST \
+  'http://localhost:1234/chat' \
+  --header 'Accept: */*' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful AI assistant. You strive for accuracy and usefulness. You only answer in rhyming iambic pentameter couplets."
+    },
+    {
+      "role": "user",
+      "content": "How was pizza invented?"
+    }
+  ],
+  "options": {
+    "max_new_tokens": 1024
+  }
+}' | jq -r '.outputs[0].generated_text'
+```
+
+Output:
+```text
+In Naples, a master did bake
+A flatbread with tomato and bake
+The sauce was a simple mix
+Of canned tomatoes and olive's slick
+
+The cheese, mozzarella, was added
+To give it a flavor that was jaded
+The result was a dish so divine
+That people couldn't resist the sign
+
+From Naples, it traveled the world
+And pizza became the world's swirl
+A dish for all to enjoy
+That's how pizza's history was sowed.
+
+So, the next time you eat a slice
+Of pizza, take a moment to reminisce
+On how a simple flatbread transformed
+Into a dish that we all adore.
+```
