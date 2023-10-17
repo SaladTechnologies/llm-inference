@@ -1,0 +1,30 @@
+#! /usr/bin/env bash
+normalize_huggingface_model_id() {
+  local model_id="$1"
+  local normalized_tag
+  # Replace non-alphanumeric characters with hyphens
+  normalized_tag=$(echo "$model_id" | tr -cs '[:alnum:]' '-' | tr '[:upper:]' '[:lower:]')
+  # Remove leading and trailing hyphens
+  normalized_tag=$(echo "$normalized_tag" | sed -E 's/^-+|-+$//g')
+  echo "$normalized_tag"
+}
+
+model_id="$1"
+
+if [ -z "$model_id" ]; then
+  echo "Usage: $0 <model-id>"
+  exit 1
+fi
+
+docker_tag=$(normalize_huggingface_model_id "$model_id")
+
+echo "Building Docker image with tag: saladtechnologies/llm-inference:$docker_tag"
+echo "Text Generation Model ID: $model_id"
+
+docker buildx build \
+  -t saladtechnologies/llm-inference:$docker_tag \
+  --platform linux/amd64 \
+  --output type=docker \
+  --provenance=false \
+  --build-arg MODEL_ID="$model_id" \
+  .
