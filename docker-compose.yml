@@ -3,10 +3,10 @@ services:
   llm-inference:
     # Use the tag that matches the model you want to deploy, or set the MODEL_ID environment variable
     # to the model ID you want to deploy. DO NOT DO BOTH WITH DIFFERENT VALUES.
-    image: saladtechnologies/llm-inference:base
+    image: saladtechnologies/llm-inference:huggingfaceh4-zephyr-7b-alpha
     environment:
       PORT: 1234
-      MODEL_ID: HuggingFaceH4/zephyr-7b-alpha
+      # MODEL_ID: HuggingFaceH4/zephyr-7b-alpha
     ports:
       - 1234:1234
     deploy:

@@ -40,7 +40,7 @@ class ChatMessage(BaseModel):
     content: str
 
 
-class LongGenerationStrategies(str, Enum):
+class LongGenerationStrategies(Enum):
     none = None
     hole = "hole"
 
@@ -68,12 +68,14 @@ async def chat(request: ChatRequest):
         raise HTTPException(
             status_code=400, detail="Request must contain at least one message"
         )
+    options = request.options.model_dump()
+    options["handle_long_generation"] = options["handle_long_generation"].value
 
     start = time.perf_counter()
     prompt = pipe.tokenizer.apply_chat_template(
         request.messages, tokenize=False, add_generation_prompt=True
     )
-    outputs = pipe(prompt, **request.options.model_dump())
+    outputs = pipe(prompt, **options)
     end = time.perf_counter()
 
     return {

@@ -1,6 +1,18 @@
 # llm-inference
 A text generation inference server template for LLMs hosted by huggingface
 
+## Discover compatible models
+
+```bash
+# Syntax: models [--task <task>] [--limit <limit>]
+#   --task: The task to search for. Defaults to "text-generation"
+#   --limit: The number of models to show. Defaults to 100
+
+./models --limit 500
+```
+
+This script will let you search compatible models on huggingface hub, and copies your selection the clipboard
+
 ## Build
 
 You can bake a model into the image by supplying a model id to the build script. The model will be downloaded and cached in the image. The model will be loaded into memory when the container starts.

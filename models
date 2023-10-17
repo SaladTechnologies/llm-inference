@@ -1,0 +1,70 @@
+#! /usr/bin/env bash
+
+# Syntax: models [--task <task>] [--limit <limit>]
+#   --task: The task to search for. Defaults to "text-generation"
+#   --limit: The number of models to show. Defaults to 100
+
+# Parse arguments
+task="text-generation"
+limit=100
+
+while [[ $# -gt 0 ]]; do
+  key="$1"
+
+  case $key in
+  --task)
+    task="$2"
+    shift
+    shift
+    ;;
+  --limit)
+    limit="$2"
+    shift
+    shift
+    ;;
+  *)
+    echo "Unknown argument: $key"
+    exit 1
+    ;;
+  esac
+done
+
+# Check that curl is installed, install if not
+if ! command -v curl &>/dev/null; then
+  echo "curl could not be found, installing..."
+  sudo apt install curl
+fi
+
+# Check that jq is installed, install if not
+if ! command -v jq &>/dev/null; then
+  echo "jq could not be found, installing..."
+  sudo apt install jq
+fi
+
+# Check that fzf is installed, install if not
+if ! command -v fzf &>/dev/null; then
+  echo "fzf could not be found, installing..."
+  sudo apt install fzf
+fi
+
+# Check that xclip is installed, install if not
+if ! command -v xclip &>/dev/null; then
+  echo "xclip could not be found, installing..."
+  sudo apt install xclip
+fi
+
+base_url="https://huggingface.co"
+model_search_endpoint="$base_url/api/models?filter=$task&sort=downloads&direction=-1&limit=$limit"
+
+echo "Searching for models with task: $task"
+echo "Endpoint: $model_search_endpoint"
+
+# Get the model list. The API returns a JSON array of models.we want the .id and .downloads fields
+# We want fzf to show a nice table of the model ID and downloads, so we pipe the output to jq
+# When the user selects with fzf, we want to echo the model ID, and copy it to the clipboard
+model_id=$(curl -s "$model_search_endpoint" |
+  jq -r '.[] | "\(.id) \(. | @base64)"' |
+  fzf --with-nth=1 --delimiter=" " --preview='echo {} | awk -F" " "{print \$2}" | base64 --decode | jq .' | awk -F" " '{print $1}')
+
+echo "$model_id" | xclip -selection clipboard
+echo "$model_id"
