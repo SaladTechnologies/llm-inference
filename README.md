@@ -1,2 +1,2 @@
 # llm-inference
-A text generation inference server template for llms hosteb by huggingface
+A text generation inference server template for LLMs hosted by huggingface
