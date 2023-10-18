@@ -1,4 +1,4 @@
-FROM nvcr.io/nvidia/pytorch:23.09-py3
+FROM pytorch/pytorch:2.1.0-cuda12.1-cudnn8-devel
 
 RUN apt-get update -y && apt-get install -y git
 
